@@ -63,7 +63,7 @@ const productSchema = new mongoose.Schema(
 
     isApproved: {
       type: Boolean,
-      default: false, // admin verification
+      default: true, // admin verification
     },
   },
   { timestamps: true },
