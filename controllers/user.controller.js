@@ -1,4 +1,5 @@
 import User from "../models/User.js";
+import Product from "../models/Product.js";
 
 export const getUserProfile = async (req, res) => {
   try {
@@ -38,5 +39,33 @@ export const updateUserProfile = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+export const getSellerProfile = async (req, res) => {
+  try {
+    const seller = await User.findById(req.params.id).select(
+      "-password"
+    );
+
+    if (!seller || seller.role !== "seller") {
+      return res.status(404).json({
+        message: "Seller not found",
+      });
+    }
+
+    const products = await Product.find({
+      seller: seller._id,
+      isApproved: true,
+    });
+
+    res.json({
+      seller,
+      products,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
