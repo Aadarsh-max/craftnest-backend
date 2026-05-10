@@ -72,3 +72,30 @@ export const getOrderById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const getSellerOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({
+      "orderItems.seller": req.user._id,
+    }).sort("-createdAt");
+
+    const sellerOrders = orders.map((order) => {
+      const filteredItems = order.orderItems.filter(
+        (item) =>
+          item.seller.toString() ===
+          req.user._id.toString()
+      );
+
+      return {
+        ...order._doc,
+        orderItems: filteredItems,
+      };
+    });
+
+    res.json(sellerOrders);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};

@@ -125,3 +125,17 @@ export const deleteProduct = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const getSellerProducts = async (req, res) => {
+  try {
+    const products = await Product.find({
+      seller: req.user._id,
+    }).sort("-createdAt");
+
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};

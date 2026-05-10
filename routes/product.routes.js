@@ -5,19 +5,16 @@ import {
   getProductById,
   updateProduct,
   deleteProduct,
+  getSellerProducts,
 } from "../controllers/product.controller.js";
 
-import {
-  protect,
-  sellerOnly,
-} from "../middleware/auth.middleware.js";
+import { protect, sellerOnly } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-router
-  .route("/")
-  .get(getProducts)
-  .post(protect, sellerOnly, createProduct);
+router.route("/").get(getProducts).post(protect, sellerOnly, createProduct);
+
+router.get("/seller/my-products", protect, sellerOnly, getSellerProducts);
 
 router
   .route("/:id")
