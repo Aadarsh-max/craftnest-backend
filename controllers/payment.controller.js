@@ -1,4 +1,5 @@
 import Order from "../models/Order.js";
+import { createStripeSession } from "../services/stripe.service.js";
 
 export const updateOrderToPaid = async (req, res) => {
   try {
@@ -24,5 +25,27 @@ export const updateOrderToPaid = async (req, res) => {
     res.json(order);
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+export const createCheckoutSession = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({
+        message: "Order not found",
+      });
+    }
+
+    const session = await createStripeSession(order.orderItems);
+
+    res.json({
+      url: session.url,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
