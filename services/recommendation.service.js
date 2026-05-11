@@ -15,7 +15,7 @@ export const getRecommendations = async ({ userId, mood }) => {
   }).limit(20);
 
   const productData = products.map((product) => ({
-    id: product._id,
+    id: product._id.toString(),
     name: product.name,
     category: product.category,
     moodTags: product.moodTags,
@@ -23,20 +23,35 @@ export const getRecommendations = async ({ userId, mood }) => {
   }));
 
   const prompt = `
-    Recommend the best handmade products for this user.
+Recommend the best handmade products for this user.
 
-    User Region: ${user.region}
-    Preferred Mood: ${mood}
+User Region: ${user.region}
+Preferred Mood: ${mood}
 
-    Products:
-    ${JSON.stringify(productData)}
+Products:
+${JSON.stringify(productData)}
 
-    Return only recommended product IDs as JSON array.
-  `;
+Return ONLY a JSON array of recommended product IDs.
+
+Example:
+["id1","id2"]
+`;
 
   const aiResponse = await generateAIResponse(prompt);
 
-  return {
-    recommendations: aiResponse,
-  };
+  let recommendedIds = [];
+
+  try {
+    recommendedIds = JSON.parse(aiResponse);
+  } catch (error) {
+    recommendedIds = [];
+  }
+
+  const recommendedProducts = await Product.find({
+    _id: {
+      $in: recommendedIds,
+    },
+  });
+
+  return recommendedProducts;
 };
