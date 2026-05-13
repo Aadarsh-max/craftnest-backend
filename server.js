@@ -15,13 +15,10 @@ import paymentRoutes from "./routes/payment.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import aiRoutes from "./routes/ai.routes.js";
 import uploadRoutes from "./routes/upload.routes.js";
+import wishlistRoutes from "./routes/wishlist.routes.js";
 
 import rateLimiter from "./middleware/rateLimiter.middleware.js";
-import {
-  notFound,
-  errorHandler,
-} from "./middleware/error.middleware.js";
-
+import { notFound, errorHandler } from "./middleware/error.middleware.js";
 
 connectDB();
 
@@ -46,6 +43,7 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/wishlist", wishlistRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
