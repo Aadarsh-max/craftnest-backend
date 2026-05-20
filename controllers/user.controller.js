@@ -69,3 +69,44 @@ export const getSellerProfile = async (req, res) => {
     });
   }
 };
+
+export const getAllSellers =
+  async (req, res) => {
+    try {
+      const sellers =
+        await User.find({
+          role: "seller",
+          isVerifiedSeller: true,
+        }).select("-password");
+
+      const sellersWithStats =
+        await Promise.all(
+          sellers.map(
+            async (seller) => {
+              const productCount =
+                await Product.countDocuments(
+                  {
+                    seller:
+                      seller._id,
+
+                    isApproved: true,
+                  }
+                );
+
+              return {
+                ...seller.toObject(),
+                productCount,
+              };
+            }
+          )
+        );
+
+      res.json(
+        sellersWithStats
+      );
+    } catch (error) {
+      res.status(500).json({
+        message: error.message,
+      });
+    }
+  };
