@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
+
 import express from "express";
 import cors from "cors";
 
@@ -24,7 +25,13 @@ connectDB();
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:5173", process.env.CLIENT_URL],
+    credentials: true,
+  }),
+);
+
 app.use(express.json());
 
 app.use(rateLimiter);
